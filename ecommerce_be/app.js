@@ -6,11 +6,10 @@ const logger = require('morgan');
 const dotenv = require('dotenv').config();
 
 const connectDatabase = require('./config/database');
-
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/userRouter');
-const authRouter = require('./routes/authRoute');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
+
+const authRouter = require('./routes/authRoute');
+const productRouter = require('./routes/productRoute');
 
 connectDatabase();
 
@@ -26,9 +25,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/api/user', authRouter);
+app.use('/api/product', productRouter);
 
 app.use(notFound);
 app.use(errorHandler);

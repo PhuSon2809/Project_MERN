@@ -12,7 +12,8 @@ const createUser = asyncHandler(async (req, res) => {
     // Create new user
     const newUser = await Users.create(req.body);
     res.status(201).json({
-      status: 'success',
+      status: 201,
+      message: 'Create user successfully.',
       data: {
         user: newUser,
       },
@@ -145,6 +146,7 @@ const updateUser = asyncHandler(async (req, res) => {
     );
     res.status(202).json({
       status: 202,
+      message: 'Update user successfully.',
       userUpdated: userUpdated,
     });
   } catch (error) {
@@ -196,6 +198,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     const userDelete = await Users.findByIdAndDelete(id);
     res.status(200).json({
       status: 200,
+      message: 'Delete user successfully.',
       userDelete: userDelete,
     });
   } catch (error) {
