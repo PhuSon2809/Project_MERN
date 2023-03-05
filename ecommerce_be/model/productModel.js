@@ -42,9 +42,7 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
-    image: {
-      type: Array,
-    },
+    images: [],
     color: {
       type: String,
       //   enum: ['black', 'Brown', 'Red'],

@@ -9,7 +9,9 @@ const {
   getBlog,
   likeBlog,
   dislikeBlog,
+  uploadImages
 } = require('../controller/blogController');
+const { uploadPhoto, blogImgResize } = require('../middlewares/uploadImages');
 
 const blogRouter = express.Router();
 
@@ -19,6 +21,16 @@ blogRouter
   .route('/')
   .post(authMiddleware, isAdmin, createBlog)
   .get(getAllBlogs);
+
+blogRouter
+  .route('/upload-images/:id')
+  .put(
+    authMiddleware,
+    isAdmin,
+    uploadPhoto.array('images', 2),
+    blogImgResize,
+    uploadImages
+  );
 
 blogRouter.route('/likes').put(authMiddleware, likeBlog);
 blogRouter.route('/dislikes').put(authMiddleware, dislikeBlog);
