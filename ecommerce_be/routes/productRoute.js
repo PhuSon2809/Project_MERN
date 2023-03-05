@@ -6,6 +6,8 @@ const {
   getAllProducts,
   updateProduct,
   deleteProduct,
+  addToWishList,
+  rating,
 } = require('../controller/productController');
 const { isAdmin, authMiddleware } = require('../middlewares/authMiddleware');
 
@@ -17,6 +19,10 @@ productRouter
   .route('/')
   .post(authMiddleware, isAdmin, createProduct)
   .get(getAllProducts);
+
+productRouter.route('/wishlist').put(authMiddleware, addToWishList);
+productRouter.route('/rating').put(authMiddleware, rating);
+
 productRouter
   .route('/:id')
   .get(getProduct)
