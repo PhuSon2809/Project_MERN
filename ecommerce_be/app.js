@@ -13,6 +13,7 @@ const productRouter = require('./routes/productRoute');
 const blogRouter = require('./routes/blogRoute');
 const prodCategoryRouter = require('./routes/prodCategoryRoute');
 const blogCategoryRouter = require('./routes/blogCategoryRoute');
+const brandRouter = require('./routes/brandRoute');
 
 connectDatabase();
 
@@ -33,6 +34,7 @@ app.use('/api/product', productRouter);
 app.use('/api/blog', blogRouter);
 app.use('/api/prodcategory', prodCategoryRouter);
 app.use('/api/blogcategory', blogCategoryRouter);
+app.use('/api/brand', brandRouter);
 
 app.use(notFound);
 app.use(errorHandler);
