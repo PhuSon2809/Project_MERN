@@ -14,6 +14,7 @@ const blogRouter = require('./routes/blogRoute');
 const prodCategoryRouter = require('./routes/prodCategoryRoute');
 const blogCategoryRouter = require('./routes/blogCategoryRoute');
 const brandRouter = require('./routes/brandRoute');
+const couponRouter = require('./routes/couponRoute');
 
 connectDatabase();
 
@@ -35,6 +36,7 @@ app.use('/api/blog', blogRouter);
 app.use('/api/prodcategory', prodCategoryRouter);
 app.use('/api/blogcategory', blogCategoryRouter);
 app.use('/api/brand', brandRouter);
+app.use('/api/coupon', couponRouter);
 
 app.use(notFound);
 app.use(errorHandler);
