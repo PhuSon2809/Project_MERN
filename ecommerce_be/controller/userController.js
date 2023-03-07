@@ -435,6 +435,32 @@ const applyCoupon = asyncHandler(async (req, res) => {
   });
 });
 
+const createOrder = asyncHandler(async (req, res) => {
+  const { COD, couponApplied } = req.body;
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+  try {
+    if (!COD) throw new Error('Create cash order failed.');
+    const user = await Users.findOne(_id);
+    let userCart = await Carts.findOne({ orderby: user._id });
+    let finalAmount = 0;
+    if (couponApplied && userCart.totalAfterDiscount) {
+      finalAmount = userCart.totalAfterDiscount * 100;
+    } else {
+      finalAmount = userCart.cartTotal * 100;
+    }
+
+    let newOrder= await new Orders({
+      products: userCart.products,
+      paymentIntent:{
+        _id
+      }
+    })
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createUser,
   login,
