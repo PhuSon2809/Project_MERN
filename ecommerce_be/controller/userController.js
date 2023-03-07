@@ -2,6 +2,7 @@ const Users = require('../model/userModel');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const uniqid = require('uniqid');
 const { generateToken } = require('../config/jwtToken');
 const validateMongoDbId = require('../utils/validateMongodbid');
 const { generateRefreshToken } = require('../config/refreshToken');
@@ -9,6 +10,7 @@ const { sendEmail } = require('./emailController');
 const Carts = require('../model/cartModel');
 const Products = require('../model/productModel');
 const Coupons = require('../model/couponModel');
+const Orders = require('../model/orderModel');
 
 const createUser = asyncHandler(async (req, res) => {
   const email = req.body.email;
@@ -190,12 +192,25 @@ const updateUser = asyncHandler(async (req, res) => {
 
 const updatePassword = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { password } = req.body;
+  const { oldPassword, password, confirmPassword } = req.body;
   validateMongoDbId(_id);
+
   const user = await Users.findById(_id);
+
+  const isPasswordMatched = await user.isPasswordMatched(oldPassword);
+
+  if (!isPasswordMatched) {
+    throw new Error('Old password is incorrect');
+  }
+
+  if (password !== confirmPassword) {
+    throw new Error('Confirm password does not match');
+  }
+  
   if (password) {
     user.password = password;
     const updatedPassword = await user.save();
+    generateToken(user?._id)
     res.json(updatedPassword);
   } else {
     res.json(user);
@@ -445,17 +460,77 @@ const createOrder = asyncHandler(async (req, res) => {
     let userCart = await Carts.findOne({ orderby: user._id });
     let finalAmount = 0;
     if (couponApplied && userCart.totalAfterDiscount) {
-      finalAmount = userCart.totalAfterDiscount * 100;
+      finalAmount = userCart.totalAfterDiscount;
     } else {
-      finalAmount = userCart.cartTotal * 100;
+      finalAmount = userCart.cartTotal;
     }
 
-    let newOrder= await new Orders({
+    let newOrder = await new Orders({
       products: userCart.products,
-      paymentIntent:{
-        _id
-      }
-    })
+      paymentIntent: {
+        id: uniqid(),
+        method: 'COD',
+        amount: finalAmount,
+        status: 'Cash on Delivery',
+        created: Date.now(),
+        currency: 'usd',
+      },
+      orderby: user._id,
+      orderStatus: 'Cash on Delivery',
+    }).save();
+    let update = userCart.products.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product._id },
+          update: { $inc: { quantity: -item.count, sold: +item.count } },
+        },
+      };
+    });
+    const updated = await Products.bulkWrite(update, {});
+    res.status(200).json({
+      status: 200,
+      message: 'success',
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const getOrders = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+  try {
+    const userorders = await Orders.findOne({ orderby: _id })
+      .populate('products.product')
+      .exec();
+    res.status(200).json({
+      status: 200,
+      userorders: userorders,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+  const { id } = req.params;
+  validateMongoDbId(id);
+  try {
+    const updateOrderStatus = await Orders.findByIdAndUpdate(
+      id,
+      {
+        orderStatus: status,
+        paymentIntent: {
+          status: status,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({
+      status: 200,
+      updateOrderStatus: updateOrderStatus,
+    });
   } catch (error) {
     throw new Error(error);
   }
@@ -482,4 +557,7 @@ module.exports = {
   getUserCart,
   emptyCart,
   applyCoupon,
+  createOrder,
+  getOrders,
+  updateOrderStatus,
 };
