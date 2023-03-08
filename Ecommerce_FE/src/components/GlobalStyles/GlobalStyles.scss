@@ -1,0 +1,71 @@
+@import url("https://fonts.googleapis.com/css2?family=Bitter:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Poppins:wght@200;300;400;500;600;700;800&family=Raleway:ital,wght@0,100;0,300;0,400;0,500;1,600&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800&family=Roboto:wght@300;400;500;700;900&family=Tiro+Devanagari+Sanskrit&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  text-rendering: optimizeSpeed;
+  transition: 0.2s ease-in-out;
+}
+
+button,
+input,
+[tabindex] {
+  outline: none;
+  border: none;
+  background: none;
+}
+
+a[href] {
+  text-decoration: none;
+}
+
+.content-web {
+  min-height: 80vh;
+}
+
+.transition {
+  transition: all 0.4s ease-in-out;
+}
+
+.swiper {
+  width: 100%;
+  // height: 540px;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.swiper-pagination-bullet-active {
+  background: black;
+}
+.swiper-button-next,
+.swiper-button-prev {
+  color: black !important;
+}
